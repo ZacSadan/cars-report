@@ -1,0 +1,52 @@
+# Yad2 car search config - see README.md for full documentation.
+
+search:
+  manufacturer:
+    - 15   # דייהטסו (Daihatsu)
+    - 17   # הונדה (Honda)
+    - 19   # טויוטה (Toyota)
+    - 21   # יונדאי (Hyundai)
+    - 27   # מאזדה (Mazda)
+    - 30   # מיצובישי (Mitsubishi)
+    - 35   # סובארו (Subaru)
+    - 36   # סוזוקי (Suzuki)
+  year: "2016--1"
+  price: "40000-55000"
+  km: "30000-160000"
+  hand: "0-1"
+  engineval: "1500--1"
+
+options:
+  exclude_dealers: true   # keep only private-seller ads
+
+  # Substrings checked (case-insensitive) against the ad description.
+  # Matches are wrapped in bold red in the report. Add your own freely.
+  suspicious_keywords:
+    - "תאונה"
+    - "אחרי תאונה"
+    - "השכרה"
+    - "חברת השכרה"
+    - "ליסינג"
+    - "מונית"
+
+  output_file: "yad2_report.html"
+
+  # --- live automation via a real, visible Chrome (scrape.js) ---
+
+  # yad2 request limit; manufacturer list is split into chunks of this size
+  max_manufacturers_per_request: 4   
+
+  # randomized pause between search-result page/chunk navigations
+  request_delay_seconds: [2, 5]      
+
+  # randomized pause specifically between visiting individual ad ("inner") pages
+  inner_page_delay_seconds: [6, 14]  
+
+  # safety cap per manufacturer chunk
+  max_pages_per_search: 4           
+
+  # only fetch full inner-page details for the first N listings found; rest are listed as links/summaries only
+  max_ad_details: 10            
+
+  # persistent Chrome user-data-dir, reused across runs
+  browser_profile_dir: ".pw-test"    

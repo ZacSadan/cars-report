@@ -1,0 +1,16 @@
+{
+  "name": "yad2-scraper",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Yad2 car search -> self-contained HTML report, driven by a real, visible Chrome browser with puppeteer-extra-plugin-stealth.",
+  "main": "scrape.js",
+  "scripts": {
+    "scrape": "node scrape.js"
+  },
+  "dependencies": {
+    "js-yaml": "^5.2.2",
+    "puppeteer": "^25.4.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  }
+}

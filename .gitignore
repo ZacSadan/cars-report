@@ -1,0 +1,14 @@
+node_modules/
+
+# Local Claude Code tooling config, not part of the project
+.claude/
+
+# Persistent Chrome profile used by scrape.js - contains real browsing/session data
+.pw-test/
+
+# Generated report output - contains real scraped listing data/images
+yad2_report.html
+*.html
+
+# Debug artifacts
+debug-*.png
