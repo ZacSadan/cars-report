@@ -1,4 +1,5 @@
 .claude/
 .pw-test/
 node_modules/
-reports/
+reports/*.html
+reports/items/*.html
