@@ -1,23 +1,59 @@
-# Yad2 car search config - see README.md for full documentation.
+# Cars-report car search config - see README.md for full documentation.
+
+# --------------------------------------------
+# REMEMBER TO CONNECT THE CHROME PROFILE
+# TO YOUR GMAIL WHEN THE BROWSER IS OPENED !!!
+# --------------------------------------------
 
 search:
-  manufacturer:
-    - 15   # דייהטסו (Daihatsu)
+  manufacturer:    
     - 17   # הונדה (Honda)
     - 19   # טויוטה (Toyota)
-    - 21   # יונדאי (Hyundai)
     - 27   # מאזדה (Mazda)
-    - 30   # מיצובישי (Mitsubishi)
-    - 35   # סובארו (Subaru)
     - 36   # סוזוקי (Suzuki)
-  year: "2016--1"
-  price: "40000-55000"
-  km: "30000-160000"
-  hand: "0-1"
-  engineval: "1500--1"
+    - 35   # סובארו (Subaru)
+    - 30   # מיצובישי (Mitsubishi)
+    - 15   # דייהטסו (Daihatsu)    
+    - 21   # יונדאי (Hyundai)
+#   - 32   # ניסאן    
+
+  year: "2016--1" #"2016--1"
+  price: "40000-55000" #"40000-55000"
+  # km-per-year RATE per hand tier (any number of tiers). Each gets scaled by
+  # the car age implied by "year" above (currentYear - year's minimum, e.g.
+  # 2026-2016=10 years) into an absolute range, e.g. 3000-16000/year * 10y =
+  # 30000-160000. The actual cars-report request always uses the widest range
+  # covering every tier (cars-report can't filter km differently per hand in one
+  # request); each listing is then checked against whichever tier matches
+  # ITS OWN hand value - but only when both its hand and km are actually
+  # known, otherwise it's kept as-is.
+  km_1st_hand_per_year: "2000-15000"
+  km_2nd_hand_per_year: "2000-14000"
+  km_3rd_hand_per_year: "2000-13000"
+
+  hand: "0-2"
+  engineval: "1450--1" #"1500--1"
 
 options:
   exclude_dealers: true   # keep only private-seller ads
+
+  # Model names to exclude entirely - if a listing's title/model contains any
+  # of these substrings, it's skipped at the results-feed stage: never listed
+  # in the report, and never crawled (its ad page is never visited).
+  excluded_models:
+#    - "אלטו"   # Suzuki Alto
+#    - "גטס"    # Hyundai Getz
+
+  # Cities to exclude entirely - same treatment as excluded_models: skipped
+  # at the results-feed stage whenever the city is known there, never listed
+  # or crawled. Only excluded when the city is actually known.
+  excluded_cities:
+    - "אילת"
+    - "יפיע"
+    - "נצרת"
+    - "כפר קאסם"
+    - "שפרעם"
+    - "טמרה"
 
   # Substrings checked (case-insensitive) against the ad description.
   # Matches are wrapped in bold red in the report. Add your own freely.
@@ -28,25 +64,32 @@ options:
     - "חברת השכרה"
     - "ליסינג"
     - "מונית"
+    - "שפשוף"
+    - "שיפוץ"
 
-  output_file: "yad2_report.html"
+  output_file: "reports/cars_report.html"
+
+  # Cars averaging under this many km/year (or first-hand cars, always) get
+  # a light-green card background in the report.
+  low_km_per_year_threshold: 10500
+
 
   # --- live automation via a real, visible Chrome (scrape.js) ---
 
-  # yad2 request limit; manufacturer list is split into chunks of this size
+  # cars-report request limit; manufacturer list is split into chunks of this size
   max_manufacturers_per_request: 4   
 
   # randomized pause between search-result page/chunk navigations
   request_delay_seconds: [2, 5]      
 
   # randomized pause specifically between visiting individual ad ("inner") pages
-  inner_page_delay_seconds: [6, 14]  
+  inner_page_delay_seconds: [12, 20]  
 
   # safety cap per manufacturer chunk
   max_pages_per_search: 4           
 
   # only fetch full inner-page details for the first N listings found; rest are listed as links/summaries only
-  max_ad_details: 10            
+  max_ad_details: 20            
 
   # persistent Chrome user-data-dir, reused across runs
   browser_profile_dir: ".pw-test"    

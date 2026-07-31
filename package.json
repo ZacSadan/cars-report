@@ -1,8 +1,8 @@
 {
-  "name": "yad2-scraper",
+  "name": "cars-report-scraper",
   "private": true,
   "version": "1.0.0",
-  "description": "Yad2 car search -> self-contained HTML report, driven by a real, visible Chrome browser with puppeteer-extra-plugin-stealth.",
+  "description": "Cars-report car search -> self-contained HTML report, driven by a real, visible Chrome browser with puppeteer-extra-plugin-stealth.",
   "main": "scrape.js",
   "scripts": {
     "scrape": "node scrape.js"
