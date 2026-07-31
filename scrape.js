@@ -3,23 +3,6 @@
  * visible Chrome browser under your own profile/network. Self-contained -
  * no dependency on parse_local.py.
  *
- * Uses puppeteer-extra with puppeteer-extra-plugin-stealth, launching the
- * actual installed Google Chrome (channel: "chrome", not the bundled
- * Chromium) in headed mode, with a persistent userDataDir (options.
- * browser_profile_dir) so it behaves like a returning real browser session
- * rather than a fresh automation profile. The stealth plugin patches the
- * usual headless/automation fingerprints (navigator.webdriver, plugins,
- * chrome runtime, etc.) as defense-in-depth on top of that.
- *
- * Heads-up from earlier investigation (see PLAN.md): cars-report.co.il previously
- * challenged automated browsers here with a Radware/ShieldSquare bot check,
- * even in this exact headed real-Chrome setup. Blocking like that is
- * IP/fingerprint dependent and can change, so this is worth retrying - but
- * if a bot-challenge page shows up (redirected to something like
- * validate.perfdrive.com, or a "Pardon our interruption" / CAPTCHA page),
- * this script stops immediately rather than silently scraping the challenge
- * page as if it were real data.
- *
  * Usage:  npm install && npm run scrape
  */
 
