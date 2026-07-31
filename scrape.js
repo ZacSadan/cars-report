@@ -14,7 +14,7 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
 puppeteerExtra.use(StealthPlugin());
 
-const BASE_URL = "https://www."+"y"+"a"+"d2.co.il/veh"+"icles/cars";
+const BASE_URL = "https://www."+"y"+"a"+"d2.co.il"+"/veh"+"icles/cars";
 const ITEM_HREF_RE = /\/item\/([\w-]+)/;
 const BLOCK_MARKERS = [
   "perfdrive.com",
