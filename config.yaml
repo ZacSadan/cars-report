@@ -18,7 +18,15 @@ search:
 #   - 32   # ניסאן    
 
   year: "2016--1" #"2016--1"
-  price: "40000-55000" #"40000-55000"
+  price: "55000-70000" #"40000-55000"
+  
+  hand: "0-1"
+  #engineval: "1450--1" #"1500--1"
+  engineval: 1100-1300
+  seats: 5
+  gearBox: 102 # automatic
+  engineType: 1101 # בנזין
+
   # km-per-year RATE per hand tier (any number of tiers). Each gets scaled by
   # the car age implied by "year" above (currentYear - year's minimum, e.g.
   # 2026-2016=10 years) into an absolute range, e.g. 3000-16000/year * 10y =
@@ -31,9 +39,6 @@ search:
   km_2nd_hand_per_year: "2000-14000"
   km_3rd_hand_per_year: "2000-13000"
 
-  hand: "0-2"
-  engineval: "1450--1" #"1500--1"
-
 options:
   exclude_dealers: true   # keep only private-seller ads
 
@@ -44,7 +49,7 @@ options:
 #    - "אלטו"   # Suzuki Alto
 #    - "גטס"    # Hyundai Getz
 
-  # Cities to exclude entirely - same treatment as excluded_models: skipped
+  # Cities to exclude entirely ( too far away to drive there ... ) - same treatment as excluded_models: skipped
   # at the results-feed stage whenever the city is known there, never listed
   # or crawled. Only excluded when the city is actually known.
   excluded_cities:
@@ -54,6 +59,11 @@ options:
     - "כפר קאסם"
     - "שפרעם"
     - "טמרה"
+    - "בת ים"
+    - "חולון"
+    - "כפר כנא"
+    - "ירכא"
+    - "מגאר"
 
   # Substrings checked (case-insensitive) against the ad description.
   # Matches are wrapped in bold red in the report. Add your own freely.

@@ -126,7 +126,7 @@ const CARD_TEMPLATE = ({
     <div class="card-meta">
       <span class="chip">${year}</span>
       ${handChip}
-      <span class="chip">${ownershipType}</span>
+      <span class="chip${ownershipColorClass(ownershipType)}">${ownershipType}</span>
       ${kmChip}
       <span class="chip">${city}</span>
       <span class="chip">${engineSize}</span>
@@ -164,7 +164,7 @@ const HTML_SHELL = ({ summary, searchParamsHtml, cards, extraSection }) => `<!do
   .chip-km-high { color: #1a5cff; }
   .chip-km-low { color: green; font-weight: 700; }
   .chip-hand-first { color: green; font-weight: 700; }
-  .chip-ownership-lease { color: #1a5cff; }
+  .chip-ownership-lease { color: red; }
   .chip-ownership-company { color: red; }
   .ownership-history { font-size: 0.8rem; margin-top: -2px; }
   .ownership-history-label { color: #666; margin-inline-end: 4px; }
