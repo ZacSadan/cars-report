@@ -7,25 +7,28 @@
 
 search:
   manufacturer:    
-    - 17   # הונדה (Honda)
-    - 19   # טויוטה (Toyota)
-    - 27   # מאזדה (Mazda)
-    - 36   # סוזוקי (Suzuki)
-    - 35   # סובארו (Subaru)
-    - 30   # מיצובישי (Mitsubishi)
-    - 15   # דייהטסו (Daihatsu)    
-    - 21   # יונדאי (Hyundai)
-#   - 32   # ניסאן    
+#    - 17   # הונדה (Honda)
+#    - 19   # טויוטה (Toyota)
+#    - 27   # מאזדה (Mazda)
+#    - 36   # סוזוקי (Suzuki)
+#    - 35   # סובארו (Subaru)
+#    - 30   # מיצובישי (Mitsubishi)
+#    - 15   # דייהטסו (Daihatsu)    
+#    - 21   # יונדאי (Hyundai)
+#    - 32   # ניסאן    
+  - 40   # סקודה    
+  model:
+  - 10545
 
   year: "2016--1" #"2016--1"
-  price: "55000-70000" #"40000-55000"
+  price: "50000-80000" #"40000-55000"
   
-  hand: "0-1"
+  hand: "0-2"
   #engineval: "1450--1" #"1500--1"
-  engineval: 1100-1300
-  seats: 5
-  gearBox: 102 # automatic
-  engineType: 1101 # בנזין
+  #engineval: 1100-1300
+  #seats: 5
+  #gearBox: 102 # automatic
+  #engineType: 1101 # בנזין
 
   # km-per-year RATE per hand tier (any number of tiers). Each gets scaled by
   # the car age implied by "year" above (currentYear - year's minimum, e.g.
@@ -99,7 +102,7 @@ options:
   max_pages_per_search: 4           
 
   # only fetch full inner-page details for the first N listings found; rest are listed as links/summaries only
-  max_ad_details: 20            
+  max_ad_details: 40           
 
   # persistent Chrome user-data-dir, reused across runs
   browser_profile_dir: ".pw-test"    

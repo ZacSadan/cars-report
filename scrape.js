@@ -139,6 +139,32 @@ const CARD_TEMPLATE = ({
 </div>
 `;
 
+const ABOUT_HTML = `<div class="about-section">
+<h2>חיפוש וסינון</h2>
+<ul>
+  <li><b>הרבה יצרנים בחיפוש אחד</b> - כל היצרנים מקובץ ההגדרות נכנסים לחיפוש אחד, ואפשר לסנן גם לפי דגם, שנה, מחיר, יד, נפח מנוע, תיבת הילוכים, סוג דלק ומספר מושבים.</li>
+  <li><b>בלי דילרים וסוכנויות</b> - נשארות רק מודעות של אנשים פרטיים.</li>
+  <li><b>בלי ערים בעייתיות או רחוקות</b> - למשל אילת, נצרת, טמרה, בת ים, חולון. את הרשימה אפשר לערוך.</li>
+  <li><b>בלי דגמים לא רצויים</b> - למשל אלטו או גטס. המודעות שלהם לא נכנסות לדו״ח, וגם לא נכנסים לדף שלהן.</li>
+  <li><b>סינון ק״מ לפי יד ולפי גיל הרכב</b> - יש טווח ק״מ לשנה לכל יד (ראשונה, שנייה, שלישית), והוא מוכפל בגיל הרכב. רכב עם יותר מדי ק״מ או עם מעט מדי ק״מ לגילו לא נכנס.</li>
+</ul>
+<h2>סימונים בדו״ח</h2>
+<ul>
+  <li><b>מילים בעייתיות</b> - מילים כמו תאונה, השכרה, ליסינג, מונית, שפשוף ושיפוץ מודגשות באדום בתיאור. את הרשימה אפשר לערוך.</li>
+  <li><b>רכבים טובים</b> - רכב ביד ראשונה, או עם ממוצע ק״מ לשנה נמוך, מקבל רקע ירוק.</li>
+  <li><b>צבע לק״מ</b> - ממוצע של יותר מ־10,000 ק״מ לשנה מסומן בכחול, ופחות מ־7,000 מסומן בירוק מודגש.</li>
+  <li><b>היסטוריית בעלות</b> - אם הבעלות היום שונה מהבעלות המקורית (למשל רכב שהיה בליסינג ועכשיו הוא פרטי), רואים את שתיהן. ליסינג, השכרה ורכב חברה מסומנים באדום.</li>
+</ul>
+<h2>הדו״ח עצמו</h2>
+<ul>
+  <li><b>קובץ HTML אחד שעומד בפני עצמו</b> - כל התמונות בתוך הקובץ, אז קל לשלוח אותו בוואטסאפ.</li>
+  <li><b>כרטיס לכל רכב</b> - תמונה, דגם וגרסה, מחיר, שנה, יד, ק״מ, עיר, מנוע ודלק, התיאור המלא וקישור למודעה.</li>
+  <li><b>הפרמטרים בראש הדו״ח</b> - רואים בדיוק איזה חיפוש הורץ.</li>
+  <li><b>מיון</b> - קודם לפי יצרן, לפי הסדר בקובץ ההגדרות, ואחר כך לפי יד מהנמוכה לגבוהה.</li>
+  <li><b>שני חלקים</b> - למודעות הראשונות יש פרטים מלאים מתוך דף המודעה. שאר המודעות מופיעות בחלק נפרד עם מה שמופיע בדף התוצאות בלבד.</li>
+</ul>
+</div>`;
+
 const HTML_SHELL = ({ summary, searchParamsHtml, cards, extraSection }) => `<!doctype html>
 <html dir="rtl" lang="he">
 <head>
@@ -173,6 +199,9 @@ const HTML_SHELL = ({ summary, searchParamsHtml, cards, extraSection }) => `<!do
   .link:hover { text-decoration: underline; }
   .extra-section { margin-top: 24px; }
   .extra-section h2 { font-size: 1.05rem; margin: 0 0 8px; }
+  .about-section { margin-top: 32px; padding: 12px 16px; background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.15); font-size: 0.9rem; line-height: 1.5; }
+  .about-section h2 { font-size: 1.05rem; margin: 12px 0 4px; }
+  .about-section ul { margin: 0; padding-inline-start: 20px; }
   .search-params { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
   .search-params .param { background: #fff; border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
   .search-params .param b { font-weight: 600; }
@@ -189,6 +218,7 @@ ${searchParamsHtml}
 <div class="grid">
 ${cards}
 </div>
+${ABOUT_HTML}
 ${extraSection}
 </body>
 </html>
@@ -607,109 +637,123 @@ async function collectListingUrls(
   for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
     const url = buildSearchUrl(search, manufacturerChunk, pageNum, kmOverride);
     console.log(`  [chunk ${manufacturerChunk}] page ${pageNum}: ${url}`);
-    await page.goto(url, { waitUntil: "domcontentloaded" });
-    await bailIfBlocked(page, browser, url);
+    // The bot challenge sometimes redirects a beat after domcontentloaded,
+    // tearing down the page mid-scroll - catch that, let bailIfBlocked handle
+    // the challenge, and retry the page.
+    let cards;
+    for (let attempt = 1; ; attempt++) {
+      try {
+        await page.goto(url, { waitUntil: "domcontentloaded" });
+        await bailIfBlocked(page, browser, url);
 
-    // Scroll to trigger lazy-loaded cards.
-    let prevHeight = 0;
-    for (let i = 0; i < 10; i++) {
-      await page.evaluate(() => window.scrollBy(0, 4000));
-      await delay(400);
-      const height = await page.evaluate(() => document.body.scrollHeight);
-      if (height === prevHeight) break;
-      prevHeight = height;
-    }
-
-    const cards = await page.evaluate(() => {
-      const anchors = Array.from(document.querySelectorAll("a[href*='item/']"));
-      // Find the smallest ancestor that still contains exactly this one
-      // item-link - climbing further would start pulling in a sibling
-      // card's markup (and its dealer badge/promo text) too.
-      const findCardContainer = (a) => {
-        let container = a;
-        let node = a.parentElement;
-        let depth = 0;
-        while (node && depth < 12) {
-          if (node.querySelectorAll("a[href*='item/']").length > 1) break;
-          container = node;
-          node = node.parentElement;
-          depth++;
+        // Scroll to trigger lazy-loaded cards.
+        let prevHeight = 0;
+        for (let i = 0; i < 10; i++) {
+          await page.evaluate(() => window.scrollBy(0, 4000));
+          await delay(400);
+          const height = await page.evaluate(() => document.body.scrollHeight);
+          if (height === prevHeight) break;
+          prevHeight = height;
         }
-        return container;
-      };
 
-      // Walk __NEXT_DATA__ to map each listing's token -> {manufacturer id,
-      // adType}. adType ("private" vs. everything else) is the actual,
-      // reliable dealer signal - confirmed directly on real ad JSON. This
-      // lets us sort by manufacturer and filter dealers correctly even for
-      // listings whose ad page we never visit.
-      const cardDataByToken = {};
-      const tag = document.getElementById("__NEXT_DATA__");
-      if (tag && tag.textContent) {
-        try {
-          const nextData = JSON.parse(tag.textContent);
-          const stack = [nextData];
-          const seenObjs = new Set();
-          while (stack.length) {
-            const cur = stack.pop();
-            if (!cur || typeof cur !== "object" || seenObjs.has(cur)) continue;
-            seenObjs.add(cur);
-            if (Array.isArray(cur)) {
-              for (const item of cur) {
-                if (item && typeof item === "object") stack.push(item);
-              }
-              continue;
+        cards = await page.evaluate(() => {
+          const anchors = Array.from(document.querySelectorAll("a[href*='item/']"));
+          // Find the smallest ancestor that still contains exactly this one
+          // item-link - climbing further would start pulling in a sibling
+          // card's markup (and its dealer badge/promo text) too.
+          const findCardContainer = (a) => {
+            let container = a;
+            let node = a.parentElement;
+            let depth = 0;
+            while (node && depth < 12) {
+              if (node.querySelectorAll("a[href*='item/']").length > 1) break;
+              container = node;
+              node = node.parentElement;
+              depth++;
             }
-            if (cur.manufacturer && typeof cur.manufacturer === "object" && cur.manufacturer.id) {
-              const tokenVal = cur.token || cur.adNumber || cur.adId || cur.id;
-              if (tokenVal) {
-                cardDataByToken[String(tokenVal)] = {
-                  manufacturerId: cur.manufacturer.id,
-                  manufacturerName: typeof cur.manufacturer.text === "string" ? cur.manufacturer.text : null,
-                  adType: typeof cur.adType === "string" ? cur.adType : null,
-                  km: cur.km != null ? cur.km : null,
-                  hand: cur.hand && typeof cur.hand === "object" ? cur.hand.text : null,
-                };
+            return container;
+          };
+    
+          // Walk __NEXT_DATA__ to map each listing's token -> {manufacturer id,
+          // adType}. adType ("private" vs. everything else) is the actual,
+          // reliable dealer signal - confirmed directly on real ad JSON. This
+          // lets us sort by manufacturer and filter dealers correctly even for
+          // listings whose ad page we never visit.
+          const cardDataByToken = {};
+          const tag = document.getElementById("__NEXT_DATA__");
+          if (tag && tag.textContent) {
+            try {
+              const nextData = JSON.parse(tag.textContent);
+              const stack = [nextData];
+              const seenObjs = new Set();
+              while (stack.length) {
+                const cur = stack.pop();
+                if (!cur || typeof cur !== "object" || seenObjs.has(cur)) continue;
+                seenObjs.add(cur);
+                if (Array.isArray(cur)) {
+                  for (const item of cur) {
+                    if (item && typeof item === "object") stack.push(item);
+                  }
+                  continue;
+                }
+                if (cur.manufacturer && typeof cur.manufacturer === "object" && cur.manufacturer.id) {
+                  const tokenVal = cur.token || cur.adNumber || cur.adId || cur.id;
+                  if (tokenVal) {
+                    cardDataByToken[String(tokenVal)] = {
+                      manufacturerId: cur.manufacturer.id,
+                      manufacturerName: typeof cur.manufacturer.text === "string" ? cur.manufacturer.text : null,
+                      adType: typeof cur.adType === "string" ? cur.adType : null,
+                      km: cur.km != null ? cur.km : null,
+                      hand: cur.hand && typeof cur.hand === "object" ? cur.hand.text : null,
+                    };
+                  }
+                }
+                for (const v of Object.values(cur)) {
+                  if (v && typeof v === "object") stack.push(v);
+                }
               }
-            }
-            for (const v of Object.values(cur)) {
-              if (v && typeof v === "object") stack.push(v);
+            } catch {
+              // ignore - manufacturer sort/dealer filter fall back for this page
             }
           }
-        } catch {
-          // ignore - manufacturer sort/dealer filter fall back for this page
-        }
+    
+          return anchors.map((a) => {
+            const container = findCardContainer(a);
+            const img = container ? container.querySelector("img") : null;
+            const text = container ? container.innerText.trim() : "";
+            const tokenMatch = /\/item\/([\w-]+)/.exec(a.href);
+            const cardData = tokenMatch ? cardDataByToken[tokenMatch[1]] : null;
+            const isDealer =
+              cardData && cardData.adType
+                ? cardData.adType !== "private"
+                : !!(
+                    container &&
+                    (container.querySelector("[class*='agencyName']") ||
+                      container.querySelector("[data-testid='trade-in-flag']"))
+                  ) ||
+                  text.includes("הכירו את הסוכנות") ||
+                  text.includes("בטרייד");
+            const manufacturerId = cardData ? cardData.manufacturerId : null;
+            return {
+              href: a.href,
+              text,
+              imageUrl: img ? img.currentSrc || img.src || null : null,
+              isDealer,
+              manufacturerId,
+              manufacturerName: cardData ? cardData.manufacturerName : null,
+              km: cardData ? cardData.km : null,
+              hand: cardData ? cardData.hand : null,
+            };
+          });
+        });
+        break;
+      } catch (err) {
+        if (attempt >= 3 || !/Execution context was destroyed|detached Frame/i.test(err.message)) throw err;
+        console.log(`   Page navigated mid-load (attempt ${attempt}/3) - checking for a bot challenge...`);
+        await page.waitForNavigation({ waitUntil: "domcontentloaded", timeout: 15000 }).catch(() => {});
+        await bailIfBlocked(page, browser, url);
       }
-
-      return anchors.map((a) => {
-        const container = findCardContainer(a);
-        const img = container ? container.querySelector("img") : null;
-        const text = container ? container.innerText.trim() : "";
-        const tokenMatch = /\/item\/([\w-]+)/.exec(a.href);
-        const cardData = tokenMatch ? cardDataByToken[tokenMatch[1]] : null;
-        const isDealer =
-          cardData && cardData.adType
-            ? cardData.adType !== "private"
-            : !!(
-                container &&
-                (container.querySelector("[class*='agencyName']") ||
-                  container.querySelector("[data-testid='trade-in-flag']"))
-              ) ||
-              text.includes("הכירו את הסוכנות") ||
-              text.includes("בטרייד");
-        const manufacturerId = cardData ? cardData.manufacturerId : null;
-        return {
-          href: a.href,
-          text,
-          imageUrl: img ? img.currentSrc || img.src || null : null,
-          isDealer,
-          manufacturerId,
-          manufacturerName: cardData ? cardData.manufacturerName : null,
-          km: cardData ? cardData.km : null,
-          hand: cardData ? cardData.hand : null,
-        };
-      });
-    });
+    }
     let newCount = 0;
     let recommendationSkipped = 0;
     let dealerSkipped = 0;
